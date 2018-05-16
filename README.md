@@ -13,4 +13,8 @@ I am by no means a professional UI developer, I am certain there are better ways
 * Decoupling emulators from systems such that you manage emulators independently, and then associate them with the systems afterword.
 * Free-form image association for each system.  Images can be screenshots, title screen, box art, whatever you want.  You simply point the front-end to any two paths containing artwork, and it will attempt to display whatever is in them.
 
+All settings are saved in a .nife folder in your home directory.  When you first start the application, you'll have an empty system list in the upper left corner, and an empty emulator list in the lower left.  To get started, right click in the systems list window to begin adding a system.  When you're done with that, right click in the emulator list window to start associating some emulator, which you will have to define in the emulator management window.
+
+In addition to the more obvious user interfaces, there are some shortcuts design to improve the overall experience.  You can launch a game by double clicking the filename, or by keeping the focus on the file list and pressing Enter.  You can edit any system or emulator by double clicking on them.  You can move systems up and down in the systems list by pressing PageUp or PageDown.
+
 This project will likely be very WIP for quite some time, but I welcome feedback either through github, or email me at procyon.sjj (at) gmail.com
