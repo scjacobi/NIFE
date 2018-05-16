@@ -4,6 +4,19 @@
 #include <QFile>
 #include <QDir>
 
+bool EnsureNifeDir()
+{
+    QString pathToDir = QDir::homePath() + "/.nife";
+    QDir nifeDir(pathToDir);
+
+    if (!nifeDir.exists())
+    {
+        return nifeDir.mkpath(".");
+    }
+
+    return true;
+}
+
 int InitializeSystemData()
 {
     int startingSystem = 0;
@@ -33,6 +46,11 @@ int InitializeSystemData()
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+
+    if (!EnsureNifeDir())
+    {
+        return 0;
+    }
 
     InitializeSystemData();
 
