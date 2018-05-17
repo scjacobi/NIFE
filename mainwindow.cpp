@@ -38,16 +38,19 @@ MainWindow::MainWindow(QWidget *parent) :
     const QIcon artIcon = QIcon::fromTheme("image-x-generic");
     QAction *artAct = new QAction(artIcon, "Toggle Art", this);
     artAct->setStatusTip(tr("Toggle between showing and hiding artwork"));
-    connect(artAct, &QAction::triggered, this, &MainWindow::toggleArt);
+    connect(artAct, &QAction::triggered, this, &MainWindow::toggleArtSetting);
     fileToolBar->addAction(artAct);
 
     sysView = new ManipulateListView(this);
     emuView = new ManipulateListView(this);
 
+    sysLayout = new QVBoxLayout();
+    emuLayout = new QVBoxLayout();
+    romLayout = new QVBoxLayout();
+
     filterLayout = new QHBoxLayout();
     filterText = new QLineEdit(this);
     doFilter = new QPushButton(this);
-    romLayout = new QVBoxLayout();
 
     // Attach the filter edit text and the filter button to a horizontal layout.
     doFilter->setText("Filter ROMs");
@@ -64,10 +67,22 @@ MainWindow::MainWindow(QWidget *parent) :
     romWidget = new QWidget(this);
     romWidget->setLayout(romLayout);
 
+    QLabel* systemLabel = new QLabel("<b>Systems:</b>", this);
+    sysLayout->addWidget(systemLabel);
+    sysLayout->addWidget(sysView);
+    sysWidget = new QWidget(this);
+    sysWidget->setLayout(sysLayout);
+
+    QLabel* emuLabel = new QLabel("<b>Emulators:</b>", this);
+    emuLayout->addWidget(emuLabel);
+    emuLayout->addWidget(emuView);
+    emuWidget = new QWidget(this);
+    emuWidget->setLayout(emuLayout);
+
     // Use a vertical splitter to combine the system view on top with with the emu view on the bottom.
     vertSplitter = new QSplitter(Qt::Vertical, this);
-    vertSplitter->addWidget(sysView);
-    vertSplitter->addWidget(emuView);
+    vertSplitter->addWidget(sysWidget);
+    vertSplitter->addWidget(emuWidget);
     vertSplitter->setSizes(QList<int>() << winSize.height()*2/3 << winSize.height()/3);
 
     // User a horizontal splitter to combine the two sys/emu views with the rom/filter widget.
@@ -80,6 +95,10 @@ MainWindow::MainWindow(QWidget *parent) :
     artLayout = new QVBoxLayout();
     art1Image = new QLabel();
     art2Image = new QLabel();
+    art1Image->setAlignment(Qt::AlignHCenter);
+    art2Image->setAlignment(Qt::AlignHCenter);
+    art1Image->setAlignment(Qt::AlignCenter);
+    art2Image->setAlignment(Qt::AlignCenter);
     artLayout->addWidget(art1Image);
     artLayout->addWidget(art2Image);
     artWidget = new QWidget(this);
@@ -146,6 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
     filemodel->setRootPath("/");
 
     sysView->setCurrentIndex(sysView->model()->index(settings.selectedSystem, 0));
+    showArt(settings.showArtwork);
 
     setFocusPolicy(Qt::StrongFocus);
 }
@@ -280,6 +300,7 @@ void MainWindow::switchSystemSelected()
 void MainWindow::resizeArt()
 {
     QSize winSize = this->size();
+\
     QList<int> sizes = artHorizSplitter->sizes();
     int width = sizes[1] * 9 / 10;
     int height = width * 3 / 4;
@@ -290,6 +311,7 @@ void MainWindow::resizeArt()
         int safesize = width * 10 / 9;
         artHorizSplitter->setSizes(QList<int>() << winSize.width() - safesize << safesize);
     }
+
     if (!art1Pixmap.isNull())
     {
         art1Image->setPixmap(art1Pixmap.scaled(width, height, Qt::KeepAspectRatio));
@@ -338,17 +360,21 @@ void MainWindow::updateArt()
     }
 }
 
-void MainWindow::toggleArt()
+void MainWindow::toggleArtSetting()
 {
-    if (settings.showArtwork)
+    settings.showArtwork = !settings.showArtwork;
+    showArt(settings.showArtwork);
+}
+
+void MainWindow::showArt(bool show)
+{
+    if (show)
     {
-        settings.showArtwork = false;
         artworkSizes = artHorizSplitter->sizes();
         artHorizSplitter->setSizes(QList<int>() << 1 << 0);
     }
     else
     {
-        settings.showArtwork = true;
         if (artworkSizes.isEmpty())
         {
             QSize winSize = this->size();

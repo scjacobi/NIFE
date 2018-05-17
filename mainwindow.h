@@ -56,7 +56,7 @@ public slots:
 
     void resizeArt();
     void updateArt();
-    void toggleArt();
+    void toggleArtSetting();
 
 private:
     Ui::MainWindow* ui;
@@ -64,13 +64,19 @@ private:
     ManipulateListView* sysView;
     ManipulateListView* emuView;
 
+    QVBoxLayout* sysLayout;
+    QVBoxLayout* emuLayout;
+    QVBoxLayout* romLayout;
+
+    QWidget* sysWidget;
+    QWidget* emuWidget;
+    QWidget* romWidget;
+
     QTabWidget* romTabs;
 
     QLineEdit* filterText;
     QPushButton* doFilter;
     QHBoxLayout* filterLayout;
-    QVBoxLayout* romLayout;
-    QWidget* romWidget;
 
     QPixmap art1Pixmap;
     QPixmap art2Pixmap;
@@ -94,6 +100,8 @@ private:
     QList<int> artworkSizes;
 
     SystemData getCurrentSystem() { return SysDataMgr::getInstance().getSysData()[currentSystemRow]; }
+
+    void showArt(bool show);
 
     void updateAndSaveCurrentSystem(SystemData system)
     {
