@@ -711,10 +711,11 @@ int MainWindow::launchEmulator(const QModelIndex& selectedRomIndex)
 
     LaunchListView* romView = (LaunchListView*)romTabs->widget(romTabs->currentIndex());
     QFileSystemModel* model = (QFileSystemModel*)romView->model();
-    QString romName = model->filePath(selectedRomIndex);
+    QString romName = QDir::toNativeSeparators(model->filePath(selectedRomIndex));
+    QString emuPath = QDir::toNativeSeparators(emu.emupath);
 
     // Construct the command to execute as a QString, and convert it to a char* for std::system.
-    QString execute = emu.emupath + " " + system.emuParams[emuRow] + " \"" + romName + "\"";
+    QString execute = emuPath + " " + system.emuParams[emuRow] + " \"" + romName + "\"";
     QByteArray ba = execute.toLatin1();
     const char *c_str2 = ba.data();
     return std::system(c_str2);
